@@ -47,7 +47,7 @@ if __name__ == '__main__':
         # 数据写入文件
         now = time.strftime("%Y-%m-%d %H:%M:%S")
         filePath = "{}".format(path.absolute()) + '/ExportOrderList_{}'.format(now) + ".xlsx"
-        data3.to_excel(filePath, index=False, encoding='gbk', engine='openpyxl')
+        data3.to_excel(filePath, index=False, engine='openpyxl')
         print("请查看文件:{}".format(filePath))
         os.system("open {}".format(path.absolute()))
         print("process finish, good luck!")
