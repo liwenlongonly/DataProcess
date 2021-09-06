@@ -32,15 +32,24 @@ if __name__ == '__main__':
             filterStr = item
 
     if data1 is not None and data2 is not None:
+        # 根据订单号合并表格
         data = pd.merge(data2, data1, on="订单编号")
+
+        # 根据过滤条件过滤
         data3 = data[data['商品属性'].str.contains(filterStr)]
         print(data3)
-        now = time.strftime("%Y-%m-%d %H:%M:%S")
-        filePath = 'ExportOrderList_{}'.format(now) + ".xlsx"
-        data3.to_excel("./{}/{}".format(outputPath, filePath), index=False, encoding='gbk', engine='openpyxl')
+
+        # 判断当前文件有没有输出文件夹，没有创建一个
         absolutePath = pathlib.Path(__file__).parent.absolute()
-        print("请查看文件:{}/{}/{}".format(absolutePath, outputPath, filePath))
-        os.system("open {}".format(outputPath))
+        path = pathlib.Path("{}/{}".format(absolutePath, outputPath))
+        if not path.exists():
+            path.mkdir()
+        # 数据写入文件
+        now = time.strftime("%Y-%m-%d %H:%M:%S")
+        filePath = "{}".format(path.absolute()) + '/ExportOrderList_{}'.format(now) + ".xlsx"
+        data3.to_excel(filePath, index=False, encoding='gbk', engine='openpyxl')
+        print("请查看文件:{}".format(filePath))
+        os.system("open {}".format(path.absolute()))
         print("process finish, good luck!")
     else:
         print("参数输入错误, 请检查参数！")
