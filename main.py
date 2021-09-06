@@ -11,7 +11,8 @@ import pathlib
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    argv = sys.argv[1:]
+    # argv = sys.argv[1:]
+    argv = ["./data/ExportOrderDetailList202109051954(1).csv", "./data/ExportOrderList9981271243 (2).xlsx"]
     filterStr = "米色"
     data1 = None
     data2 = None
@@ -45,11 +46,11 @@ if __name__ == '__main__':
         if not path.exists():
             path.mkdir()
         # 数据写入文件
-        now = time.strftime("%Y-%m-%d %H:%M:%S")
+        now = time.strftime("%Y-%m-%d %H_%M_%S")
         filePath = "{}".format(path.absolute()) + '/ExportOrderList_{}'.format(now) + ".xlsx"
         data3.to_excel(filePath, index=False, engine='openpyxl')
         print("请查看文件:{}".format(filePath))
-        os.system("open {}".format(path.absolute()))
+        # os.system("open {}".format(path.absolute()))
         print("process finish, good luck!")
     else:
         print("参数输入错误, 请检查参数！")
