@@ -16,6 +16,7 @@ if __name__ == '__main__':
     data1 = None
     data2 = None
     outputPath = "output"
+
     for item in argv:
         if item.endswith(".csv"):
             data1 = pd.read_csv(item, encoding='gbk',
@@ -25,6 +26,8 @@ if __name__ == '__main__':
         elif item.endswith(".xlsx"):
             data2 = pd.read_excel(item, usecols=["订单编号", "收货人姓名", "联系手机", "收货地址 "])
             data2["订单编号"] = data2["订单编号"].astype(str)
+            # 过滤收件人是null的行
+            data2 = data2[data2['收货人姓名'].notnull()]
         else:
             filterStr = item
 
