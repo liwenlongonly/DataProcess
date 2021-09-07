@@ -12,16 +12,21 @@ class MainWindow(QMainWindow):
         self.title = "DataProcess"
         self.top = 0
         self.left = 0
-        self.width = 900
+        self.width = 600
         self.height = 200
 
     def init_window(self):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
         self.setMinimumSize(self.width, self.height)
+        sysstr = platform.system()
+        if (sysstr == "Windows"):
+            homePath = os.path.expanduser('~')
+        else:
+            homePath = os.path.expanduser('~') + "/Desktop/"
 
         self.centralwidget = QtWidgets.QWidget()
-        self.centralwidget.setGeometry(QtCore.QRect(0, 0, self.width, self.height))
+        self.centralwidget.setGeometry(QtCore.QRect(self.top, self.left, self.width, self.height))
         self.setCentralWidget(self.centralwidget)
 
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
@@ -33,7 +38,7 @@ class MainWindow(QMainWindow):
         self.gridLayout.addWidget(self.label, 0, 0, 1, 1)
 
         self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit.setText(".")
+        self.lineEdit.setText(homePath)
         self.gridLayout.addWidget(self.lineEdit, 0, 1, 1, 1)
 
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
@@ -47,7 +52,7 @@ class MainWindow(QMainWindow):
         self.gridLayout.addWidget(self.label_1, 1, 0, 1, 1)
 
         self.lineEdit_1 = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit_1.setText(".")
+        self.lineEdit_1.setText(homePath)
         self.gridLayout.addWidget(self.lineEdit_1, 1, 1, 1, 1)
 
         self.pushButton_1 = QtWidgets.QPushButton(self.centralwidget)
@@ -61,7 +66,7 @@ class MainWindow(QMainWindow):
         self.gridLayout.addWidget(self.label_2, 2, 0, 1, 1)
 
         self.lineEdit_2 = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit_2.setText(".")
+        self.lineEdit_2.setText(homePath)
         self.gridLayout.addWidget(self.lineEdit_2, 2, 1, 1, 1)
 
         self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
@@ -87,8 +92,6 @@ class MainWindow(QMainWindow):
         self.label_4 = QtWidgets.QLabel(self.centralwidget)
         self.label_4.setText("")
         self.gridLayout.addWidget(self.label_4, 4, 1, 1, 1)
-
-        QtCore.QMetaObject.connectSlotsByName(self)
 
     def _on_btn_click(self):
         cvsPath = QtWidgets.QFileDialog.getOpenFileName(self,
