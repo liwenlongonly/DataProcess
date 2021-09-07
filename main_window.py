@@ -19,12 +19,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
         self.setMinimumSize(self.width, self.height)
-        sysstr = platform.system()
-        if (sysstr == "Windows"):
-            homePath = os.path.expanduser('~')
-        else:
-            homePath = os.path.expanduser('~') + "/Desktop/"
-
+        homePath = os.path.expanduser('~') + "/Desktop/"
         self.centralwidget = QtWidgets.QWidget()
         self.centralwidget.setGeometry(QtCore.QRect(self.top, self.left, self.width, self.height))
         self.setCentralWidget(self.centralwidget)
@@ -116,7 +111,7 @@ class MainWindow(QMainWindow):
         csvPath = self.lineEdit.text()
         if len(csvPath) <= 0 or not csvPath.endswith(".csv"):
             QMessageBox.warning(self, "Warning",
-                                self.tr("请选择cvs文件!"),
+                                self.tr("请选择csv文件!"),
                                 QMessageBox.Cancel)
             return
         xlsxPath = self.lineEdit_1.text()
@@ -129,6 +124,7 @@ class MainWindow(QMainWindow):
         self._data_process([csvPath, xlsxPath], self.lineEdit_3.text(), savePath)
         sysstr = platform.system()
         if (sysstr == "Windows"):
+            savePath = savePath.replace('/', '\\')
             os.system("explorer {}".format(savePath))
         else:
             os.system("open {}".format(savePath))
