@@ -162,7 +162,10 @@ class MainWindow(QMainWindow):
             data = pd.merge(data2, data1, on="订单编号")
 
             # 根据过滤条件过滤
-            data3 = data[data['商品属性'].str.contains(filterStr)]
+            if len(filterStr) > 0:
+                data3 = data[data['商品属性'].str.contains(filterStr)]
+            else:
+                data3 = data
             print(data3)
 
             # 判断当前文件有没有输出文件夹，没有创建一个
