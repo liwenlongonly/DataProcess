@@ -10,8 +10,8 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.title = "DataProcess"
-        self.top = 0
-        self.left = 0
+        self.top = 300
+        self.left = 600
         self.width = 600
         self.height = 200
 
@@ -121,6 +121,7 @@ class MainWindow(QMainWindow):
                                 QMessageBox.Cancel)
             return
         savePath = self.lineEdit_2.text()
+        self.statusBar().showMessage("正在处理中...")
         self._data_process([csvPath, xlsxPath], self.lineEdit_3.text(), savePath)
         sysstr = platform.system()
         if (sysstr == "Windows"):
