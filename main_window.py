@@ -88,11 +88,6 @@ class MainWindow(QMainWindow):
         self.pushButton_3.clicked.connect(lambda: self._on_btn3_click())
         self.gridLayout.addWidget(self.pushButton_3, 3, 2, 1, 1)
 
-        # 状态显示
-        self.label_4 = QtWidgets.QLabel(self.centralwidget)
-        self.label_4.setText("")
-        self.gridLayout.addWidget(self.label_4, 4, 1, 1, 1)
-
     def _on_btn_click(self):
         cvsPath = QtWidgets.QFileDialog.getOpenFileName(self,
                                                         "浏览",
@@ -100,7 +95,7 @@ class MainWindow(QMainWindow):
                                                         "Files(*.csv)")
 
         self.lineEdit.setText(cvsPath[0])
-        self.label_4.setText("")
+        self.statusBar().showMessage("")
 
     def _on_btn1_click(self):
         xlsxPath = QtWidgets.QFileDialog.getOpenFileName(self,
@@ -108,14 +103,14 @@ class MainWindow(QMainWindow):
                                                         self.lineEdit_1.text(),
                                                         "Files(*.xlsx)")
         self.lineEdit_1.setText(xlsxPath[0])
-        self.label_4.setText("")
+        self.statusBar().showMessage("")
 
     def _on_btn2_click(self):
         savePath = QtWidgets.QFileDialog.getExistingDirectory(self,
                                                              "浏览",
                                                              self.lineEdit_2.text())
         self.lineEdit_2.setText(savePath)
-        self.label_4.setText("")
+        self.statusBar().showMessage("")
 
     def _on_btn3_click(self):
         csvPath = self.lineEdit.text()
@@ -131,7 +126,6 @@ class MainWindow(QMainWindow):
                                 QMessageBox.Cancel)
             return
         savePath = self.lineEdit_2.text()
-        self.label_4.setText("处理中....")
         self._data_process([csvPath, xlsxPath], self.lineEdit_3.text(), savePath)
         sysstr = platform.system()
         if (sysstr == "Windows"):
@@ -177,6 +171,6 @@ class MainWindow(QMainWindow):
             now = time.strftime("%Y-%m-%d %H_%M_%S")
             filePath = "{}".format(absolutePath.absolute()) + '/ExportOrderList_{}'.format(now) + ".xlsx"
             data3.to_excel(filePath, index=False, engine='openpyxl')
-            self.label_4.setText("处理完成，请查看{}".format(filePath))
+            self.statusBar().showMessage("处理完成，请查看{}".format(filePath))
         else:
-            print("参数输入错误, 请检查参数！")
+            self.statusBar().showMessage("参数输入错误, 请检查参数！")
