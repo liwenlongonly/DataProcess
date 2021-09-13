@@ -10,8 +10,8 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.title = "DataProcess"
-        self.top = 0
-        self.left = 0
+        self.top = 300
+        self.left = 600
         self.width = 600
         self.height = 200
 
@@ -19,12 +19,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle(self.title)
         self.setGeometry(self.left, self.top, self.width, self.height)
         self.setMinimumSize(self.width, self.height)
-        sysstr = platform.system()
-        if (sysstr == "Windows"):
-            homePath = os.path.expanduser('~')
-        else:
-            homePath = os.path.expanduser('~') + "/Desktop/"
-
+        homePath = os.path.expanduser('~') + "/Desktop/"
         self.centralwidget = QtWidgets.QWidget()
         self.centralwidget.setGeometry(QtCore.QRect(self.top, self.left, self.width, self.height))
         self.setCentralWidget(self.centralwidget)
@@ -126,9 +121,11 @@ class MainWindow(QMainWindow):
                                 QMessageBox.Cancel)
             return
         savePath = self.lineEdit_2.text()
+        self.statusBar().showMessage("正在处理中...")
         self._data_process([csvPath, xlsxPath], self.lineEdit_3.text(), savePath)
         sysstr = platform.system()
         if (sysstr == "Windows"):
+            savePath = savePath.replace('/', '\\')
             os.system("explorer {}".format(savePath))
         else:
             os.system("open {}".format(savePath))
