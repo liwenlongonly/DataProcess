@@ -116,7 +116,7 @@ class MainWindow(QMainWindow):
         csvPath = self.lineEdit.text()
         if len(csvPath) <= 0 or not csvPath.endswith(".csv"):
             QMessageBox.warning(self, "Warning",
-                                self.tr("请选择cvs文件!"),
+                                self.tr("请选择csv文件!"),
                                 QMessageBox.Cancel)
             return
         xlsxPath = self.lineEdit_1.text()
@@ -139,8 +139,7 @@ class MainWindow(QMainWindow):
 
         for item in argv:
             if item.endswith(".csv"):
-                data1 = pd.read_csv(item, encoding='gbk',
-                                    usecols=["订单编号", "购买数量", "商品属性"])
+                data1 = pd.read_csv(item, encoding='gbk', usecols=["订单编号", "商品属性"])
                 data1["订单编号"] = data1["订单编号"].str.replace('=', '')
                 data1["订单编号"] = data1["订单编号"].str.replace('"', '')
             elif item.endswith(".xlsx"):
