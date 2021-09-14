@@ -13,7 +13,7 @@ class MainWindow(QMainWindow):
         self.top = 300
         self.left = 600
         self.width = 600
-        self.height = 200
+        self.height = 250
 
     def init_window(self):
         self.setWindowTitle(self.title)
@@ -79,9 +79,29 @@ class MainWindow(QMainWindow):
         self.gridLayout.addWidget(self.lineEdit_3, 3, 1, 1, 1)
 
         self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_3.setText("开始")
+        self.pushButton_3.setText("开始合并")
         self.pushButton_3.clicked.connect(lambda: self._on_btn3_click())
         self.gridLayout.addWidget(self.pushButton_3, 3, 2, 1, 1)
+
+        # 选取xlsx文件
+        self.label_4 = QtWidgets.QLabel(self.centralwidget)
+        self.label_4.setText(" 选择发货后的文件")
+        self.gridLayout.addWidget(self.label_4, 4, 0, 1, 1)
+
+        self.lineEdit_4 = QtWidgets.QLineEdit(self.centralwidget)
+        self.lineEdit_4.setText(homePath)
+        self.gridLayout.addWidget(self.lineEdit_4, 4, 1, 1, 1)
+
+        self.pushButton_4 = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_4.setText("预览文件")
+        self.pushButton_4.clicked.connect(lambda: self._on_btn4_click())
+        self.gridLayout.addWidget(self.pushButton_4, 4, 2, 1, 1)
+
+        self.pushButton_5 = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_5.setText("处理文件")
+        self.pushButton_5.clicked.connect(lambda: self._on_btn5_click())
+        self.gridLayout.addWidget(self.pushButton_5, 5, 2, 1, 1)
+
 
     def _on_btn_click(self):
         cvsPath = QtWidgets.QFileDialog.getOpenFileName(self,
@@ -122,15 +142,47 @@ class MainWindow(QMainWindow):
             return
         savePath = self.lineEdit_2.text()
         self.statusBar().showMessage("正在处理中...")
-        self._data_process([csvPath, xlsxPath], self.lineEdit_3.text(), savePath)
-        sysstr = platform.system()
-        if (sysstr == "Windows"):
-            savePath = savePath.replace('/', '\\')
-            os.system("explorer {}".format(savePath))
-        else:
-            os.system("open {}".format(savePath))
+        self._data_merge_process([csvPath, xlsxPath], self.lineEdit_3.text(), savePath)
+        self._open_window(savePath)
 
-    def _data_process(self, argv, filterStr, outputPath):
+    def _on_btn4_click(self):
+        xlsxPath = QtWidgets.QFileDialog.getOpenFileName(self,
+                                                         "浏览",
+                                                         self.lineEdit_4.text(),
+                                                         "Files(*.xlsx)")
+        self.lineEdit_4.setText(xlsxPath[0])
+        self.statusBar().showMessage("")
+
+    def _on_btn5_click(self):
+        xlsxPath = self.lineEdit_4.text()
+        if len(xlsxPath) <= 0 or not xlsxPath.endswith(".xlsx"):
+            QMessageBox.warning(self, "Warning",
+                                self.tr("请选择xlsx文件!"),
+                                QMessageBox.Cancel)
+            return
+        savePath = self.lineEdit_2.text()
+        self._data_delete_process(xlsxPath, savePath)
+        self._open_window(savePath)
+
+    def _data_delete_process(self, xlsxPath, outputPath):
+        data = pd.read_excel(xlsxPath)
+        data["订单编号"] = data["订单编号"].astype(str)
+        data = data.dropna(axis=1)
+        columnsNames = data.columns.tolist()
+        data = data.rename(columns={columnsNames[-1]: '运单号'})
+        data["物流公司"] = "圆通速递"
+        # 判断当前文件有没有输出文件夹，没有创建一个
+        absolutePath = pathlib.Path(outputPath)
+        if not absolutePath.exists():
+            absolutePath.mkdir()
+
+        # 数据写入文件
+        now = time.strftime("%Y-%m-%d %H_%M_%S")
+        filePath = "{}".format(absolutePath.absolute()) + '/InputOrderList_{}'.format(now) + ".xlsx"
+        data.to_excel(filePath, index=False, engine='openpyxl', columns=["订单编号", '物流公司', '运单号'])
+        self.statusBar().showMessage("处理完成，请查看{}".format(filePath))
+
+    def _data_merge_process(self, argv, filterStr, outputPath):
         data1 = None
         data2 = None
 
@@ -170,3 +222,11 @@ class MainWindow(QMainWindow):
             self.statusBar().showMessage("处理完成，请查看{}".format(filePath))
         else:
             self.statusBar().showMessage("参数输入错误, 请检查参数！")
+
+    def _open_window(self, path):
+        sysstr = platform.system()
+        if (sysstr == "Windows"):
+            path = path.replace('/', '\\')
+            os.system("explorer {}".format(path))
+        else:
+            os.system("open {}".format(path))
