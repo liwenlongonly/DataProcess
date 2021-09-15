@@ -11,8 +11,8 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.title = "DataProcess"
         self.top = 300
-        self.left = 600
-        self.width = 600
+        self.left = 400
+        self.width = 700
         self.height = 250
 
     def init_window(self):
@@ -21,7 +21,7 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(self.width, self.height)
         homePath = os.path.expanduser('~') + "/Desktop/"
         self.centralwidget = QtWidgets.QWidget()
-        self.centralwidget.setGeometry(QtCore.QRect(self.top, self.left, self.width, self.height))
+        # self.centralwidget.setGeometry(QtCore.QRect(self.top, self.left, self.width, self.height))
         self.setCentralWidget(self.centralwidget)
 
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
@@ -83,24 +83,29 @@ class MainWindow(QMainWindow):
         self.pushButton_3.clicked.connect(lambda: self._on_btn3_click())
         self.gridLayout.addWidget(self.pushButton_3, 3, 2, 1, 1)
 
+        label_space = QtWidgets.QLabel(self.centralwidget)
+        label_space.setText("处理发货后数据")
+        self.gridLayout.addWidget(label_space, 4, 2, 1, 1)
+
         # 选取xlsx文件
         self.label_4 = QtWidgets.QLabel(self.centralwidget)
-        self.label_4.setText(" 选择发货后的文件")
-        self.gridLayout.addWidget(self.label_4, 4, 0, 1, 1)
+        self.label_4.setText("选择发货后的文件")
+        self.gridLayout.addWidget(self.label_4, 5, 0, 1, 1)
 
         self.lineEdit_4 = QtWidgets.QLineEdit(self.centralwidget)
         self.lineEdit_4.setText(homePath)
-        self.gridLayout.addWidget(self.lineEdit_4, 4, 1, 1, 1)
+        self.gridLayout.addWidget(self.lineEdit_4, 5, 1, 1, 1)
 
         self.pushButton_4 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_4.setText("预览文件")
         self.pushButton_4.clicked.connect(lambda: self._on_btn4_click())
-        self.gridLayout.addWidget(self.pushButton_4, 4, 2, 1, 1)
+        self.gridLayout.addWidget(self.pushButton_4, 5, 2, 1, 1)
 
         self.pushButton_5 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_5.setText("处理文件")
         self.pushButton_5.clicked.connect(lambda: self._on_btn5_click())
-        self.gridLayout.addWidget(self.pushButton_5, 5, 2, 1, 1)
+        self.gridLayout.addWidget(self.pushButton_5, 6, 2, 1, 1)
+        self.statusBar().showMessage("请根据提示选择相关文件！")
 
 
     def _on_btn_click(self):
@@ -166,11 +171,16 @@ class MainWindow(QMainWindow):
 
     def _data_delete_process(self, xlsxPath, outputPath):
         data = pd.read_excel(xlsxPath)
+        # 将订单编号类型转换为字符串
         data["订单编号"] = data["订单编号"].astype(str)
+        # 删除NAN的列
         data = data.dropna(axis=1)
+        # 重命名最后一列
         columnsNames = data.columns.tolist()
         data = data.rename(columns={columnsNames[-1]: '运单号'})
+        # 添加一列
         data["物流公司"] = "圆通速递"
+        print(data)
         # 判断当前文件有没有输出文件夹，没有创建一个
         absolutePath = pathlib.Path(outputPath)
         if not absolutePath.exists():
@@ -224,6 +234,7 @@ class MainWindow(QMainWindow):
             self.statusBar().showMessage("参数输入错误, 请检查参数！")
 
     def _open_window(self, path):
+        # 打开指定路径的文件夹
         sysstr = platform.system()
         if (sysstr == "Windows"):
             path = path.replace('/', '\\')
