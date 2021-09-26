@@ -199,6 +199,7 @@ class MainWindow(QMainWindow):
         for item in argv:
             if item.endswith(".csv"):
                 data1 = pd.read_csv(item, encoding='gbk', usecols=["订单编号", "商品属性"])
+                data1["订单编号"] = data1["订单编号"].astype(str)
                 data1["订单编号"] = data1["订单编号"].str.replace('=', '')
                 data1["订单编号"] = data1["订单编号"].str.replace('"', '')
             elif item.endswith(".xlsx"):
