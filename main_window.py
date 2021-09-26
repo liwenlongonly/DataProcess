@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QMainWindow, QMessageBox
-from PyQt5 import QtWidgets, QtCore
+from PyQt5 import QtWidgets
 import pandas as pd
 import time
 import pathlib
@@ -14,6 +14,7 @@ class MainWindow(QMainWindow):
         self.left = 400
         self.width = 700
         self.height = 250
+        self.orderNumberName = "订单编号"
 
     def init_window(self):
         self.setWindowTitle(self.title)
@@ -172,7 +173,7 @@ class MainWindow(QMainWindow):
     def _data_delete_process(self, xlsxPath, outputPath):
         data = pd.read_excel(xlsxPath)
         # 将订单编号类型转换为字符串
-        data["订单编号"] = data["订单编号"].astype(str)
+        data[self.orderNumberName] = data[self.orderNumberName].astype(str)
         # 删除NAN的列
         data = data.dropna(axis=1)
         # 重命名最后一列
@@ -189,7 +190,7 @@ class MainWindow(QMainWindow):
         # 数据写入文件
         now = time.strftime("%Y-%m-%d %H_%M_%S")
         filePath = "{}".format(absolutePath.absolute()) + '/InputOrderList_{}'.format(now) + ".xlsx"
-        data.to_excel(filePath, index=False, engine='openpyxl', columns=["订单编号", '物流公司', '运单号'])
+        data.to_excel(filePath, index=False, engine='openpyxl', columns=[self.orderNumberName, '物流公司', '运单号'])
         self.statusBar().showMessage("处理完成，请查看{}".format(filePath))
 
     def _data_merge_process(self, argv, filterStr, outputPath):
@@ -198,13 +199,18 @@ class MainWindow(QMainWindow):
 
         for item in argv:
             if item.endswith(".csv"):
-                data1 = pd.read_csv(item, encoding='gbk', usecols=["订单编号", "商品属性"])
-                data1["订单编号"] = data1["订单编号"].astype(str)
-                data1["订单编号"] = data1["订单编号"].str.replace('=', '')
-                data1["订单编号"] = data1["订单编号"].str.replace('"', '')
+                data1 = pd.read_csv(item, encoding='gbk')
+                columnsNames = data1.columns.tolist()
+                if "主订单编号" in columnsNames:
+                    data1 = data1.rename(columns={"主订单编号": self.orderNumberName})
+                data1[self.orderNumberName] = data1[self.orderNumberName].astype(str)
+                # 去掉订单编号中的 = 字符
+                data1[self.orderNumberName] = data1[self.orderNumberName].str.replace('=', '')
+                # 去掉订单编号中的 " 字符
+                data1[self.orderNumberName] = data1[self.orderNumberName].str.replace('"', '')
             elif item.endswith(".xlsx"):
-                data2 = pd.read_excel(item, usecols=["订单编号", "收货人姓名", "联系手机", "收货地址 "])
-                data2["订单编号"] = data2["订单编号"].astype(str)
+                data2 = pd.read_excel(item)
+                data2[self.orderNumberName] = data2[self.orderNumberName].astype(str)
                 # 过滤收件人是null的行
                 data2 = data2[data2['收货人姓名'].notnull()]
             else:
@@ -212,7 +218,7 @@ class MainWindow(QMainWindow):
 
         if data1 is not None and data2 is not None:
             # 根据订单号合并表格
-            data = pd.merge(data2, data1, on="订单编号")
+            data = pd.merge(data2, data1, on=self.orderNumberName)
 
             # 根据过滤条件过滤
             if len(filterStr) > 0:
@@ -229,7 +235,7 @@ class MainWindow(QMainWindow):
             # 数据写入文件
             now = time.strftime("%Y-%m-%d %H_%M_%S")
             filePath = "{}".format(absolutePath.absolute()) + '/ExportOrderList_{}'.format(now) + ".xlsx"
-            data3.to_excel(filePath, index=False, engine='openpyxl', columns=["订单编号", "收货人姓名", "联系手机", "收货地址 ", "商品属性"])
+            data3.to_excel(filePath, index=False, engine='openpyxl', columns=[self.orderNumberName, "收货人姓名", "联系手机", "收货地址 ", "商品属性"])
             self.statusBar().showMessage("处理完成，请查看{}".format(filePath))
         else:
             self.statusBar().showMessage("参数输入错误, 请检查参数！")
