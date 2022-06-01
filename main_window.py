@@ -6,6 +6,7 @@ import pathlib
 import platform
 import os
 
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -235,7 +236,7 @@ class MainWindow(QMainWindow):
             # 数据写入文件
             now = time.strftime("%Y-%m-%d %H_%M_%S")
             filePath = "{}".format(absolutePath.absolute()) + '/ExportOrderList_{}'.format(now) + ".xlsx"
-            data3.to_excel(filePath, index=False, engine='openpyxl', columns=[self.orderNumberName, "收货人姓名", "联系手机", "收货地址 ", "商品属性"])
+            data3.to_excel(filePath, index=False, engine='openpyxl', columns=[self.orderNumberName, "收货人姓名", "联系手机", "收货地址", "商品属性"])
             self.statusBar().showMessage("处理完成，请查看{}".format(filePath))
         else:
             self.statusBar().showMessage("参数输入错误, 请检查参数！")

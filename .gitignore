@@ -1,5 +1,7 @@
 .idea
 /data
-/output
+/build/*
+/dist/*
+/output/*
 /__pycache__/*
-
+main.spec
